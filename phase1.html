@@ -28,7 +28,7 @@
         var game = new Phaser.Game(config);
 
         function preload() {
-
+            var scoreText;
             //this.load.setBaseURL('http://labs.phaser.io');
 
             this.load.image('sky', 'assets/sky.png');
@@ -42,31 +42,31 @@
         }
 
         function create() {
+            score = 0;
+
             this.add.image(0, 0, 'sky').setOrigin(0, 0);
-
-
 
             platforms = this.physics.add.staticGroup();
 
             stars = this.physics.add.group({
                 key: 'star',
                 repeat: 11,
-                setXY: {x: 12, y: 0, stepX: 80}
+                setXY: { x: 12, y: 0, stepX: 80 }
             });
 
-            stars.children.iterate(function(child){
-                child.setBounceY(Phaser.Math.FloatBetween(0.4,0.8));
+            stars.children.iterate(function (child) {
+                child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
             });
-            
+
 
             platforms.create(0, 538, 'ground')
                 .setScale(2)
                 .setOrigin(0, 0)
                 .refreshBody();
-            
+
             platforms.create(200, 320, 'ground');
             platforms.create(300, 420, 'ground');
-            
+
 
             player = this.physics.add.sprite(100, 450, 'dude');
             player.setBounce(0.2);
@@ -90,17 +90,19 @@
                 repeat: -1
             });
 
-            this.physics.add.collider(player, platforms); 
+            this.physics.add.collider(player, platforms);
             this.physics.add.collider(stars, platforms);
 
             this.physics.add.overlap(player, stars, collectStar, null, this);
 
             cursors = this.input.keyboard.createCursorKeys();
-
+            scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
         }
 
-        function collectStar(player, star){
+        function collectStar(player, star) {
             star.disableBody(true, true);
+            score += 15;
+            scoreText.setText('Score: ' + score);
         }
 
         function update() {
