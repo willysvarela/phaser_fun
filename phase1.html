@@ -48,18 +48,25 @@
 
             platforms = this.physics.add.staticGroup();
 
-            stars = this.physics.add.staticGroup();
-            for (var i = 0; i < 10; i++) {
-                stars.create(Math.random() * 800, Math.random() * 600, 'star');
-            }
+            stars = this.physics.add.group({
+                key: 'star',
+                repeat: 11,
+                setXY: {x: 12, y: 0, stepX: 80}
+            });
+
+            stars.children.iterate(function(child){
+                child.setBounceY(Phaser.Math.FloatBetween(0.4,0.8));
+            });
+            
 
             platforms.create(0, 538, 'ground')
                 .setScale(2)
                 .setOrigin(0, 0)
                 .refreshBody();
-            for (var i = 0; i < 3; i++) {
-                platforms.create(Math.random() * 800, Math.random() * 500, 'ground');
-            }
+            
+            platforms.create(200, 320, 'ground');
+            platforms.create(300, 420, 'ground');
+            
 
             player = this.physics.add.sprite(100, 450, 'dude');
             player.setBounce(0.2);
@@ -83,11 +90,17 @@
                 repeat: -1
             });
 
-            this.physics.add.collider(player, platforms);
-            this.physics.add.collider(player, stars);
+            this.physics.add.collider(player, platforms); 
+            this.physics.add.collider(stars, platforms);
+
+            this.physics.add.overlap(player, stars, collectStar, null, this);
 
             cursors = this.input.keyboard.createCursorKeys();
 
+        }
+
+        function collectStar(player, star){
+            star.disableBody(true, true);
         }
 
         function update() {
